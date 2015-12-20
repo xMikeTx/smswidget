@@ -10,8 +10,8 @@
 	android:layout_width="fill_parent" android:layout_height="68dp">
 	<!-- android:background="@drawable/app_icon" -->
 
-	<Button android:id="@+id/button"
-		android:layout_height="fill_parent" android:layout_width="fill_parent" android:background="@drawable/buttonhighlight"></Button>
+	<ImageView android:id="@+id/button"
+		android:layout_height="fill_parent" android:layout_width="fill_parent" android:background="@drawable/buttonhighlight"></ImageView>
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/linearLayout1" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:orientation="vertical"

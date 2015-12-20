@@ -23,35 +23,30 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ReceiverCallNotAllowedException;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Email;
-import android.provider.ContactsContract.Contacts;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Set;
-import com.google.ads.*;
+
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 /**
  * The configuration screen for the ExampleAppWidgetProvider widget sample.
@@ -62,6 +57,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 	// Storage params
 	private static final String PREFS_NAME = "dev.mike.smswidget.ExampleAppWidgetProvider";
 	private static final String PREF_PREFIX_CONTACT_NAME = "prefix_contactName_";
+	private static final String PREF_PREFIX_BACKGROUND = "prefix_background_";
 	private static final String PREF_PREFIX_CONTACT_NUMBER = "prefix_contactNumber_";
 	private static final String PREF_PREFIX_KEY = "prefix_";
 	private static final String PREF_PREFIX_STARTSMS = "prefix_startSMSAPP";
@@ -83,6 +79,8 @@ public class ExampleAppWidgetConfigure extends Activity {
 	// members for the ui elements
 	EditText mAppWidgetPrefix;
 	EditText mWidgetHeader;
+	EditText mColorInput;
+	Button mBtnColorPicker;
 	TextView m_contactTv;
 	CheckBox m_startSMSEditor;
 	// Button m_selectContact;
@@ -143,6 +141,16 @@ public class ExampleAppWidgetConfigure extends Activity {
 		if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
 			finish();
 		}
+
+		mBtnColorPicker = (Button)findViewById(R.id.btn_color);
+		mBtnColorPicker.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
+
+		mColorInput = (EditText)findViewById(R.id.et_setcolor);
 
 		// set name
 		//m_contactName = mWidgetHeader.getText().toString();
@@ -262,6 +270,20 @@ public class ExampleAppWidgetConfigure extends Activity {
 		public void onClick(View v) {
 			final Context context = ExampleAppWidgetConfigure.this;
 
+			if(mColorInput.getText()!=null ) {
+				String color =  mColorInput.getText().toString();
+				if(!color.contains("#"))
+					color = "#" + color;
+				try {
+					Color.parseColor(color);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Toast.makeText(ExampleAppWidgetConfigure.this,"Invalid color",Toast.LENGTH_LONG).show();
+					return;
+				}
+				saveWidgetBackground(context, mAppWidgetId, color);
+			}
+
 			String number = m_contactNumber;// m_receiverEditBox.getText().toString();
 			if (number != null) {
 				if (!number.equals("No Number")|| !m_startSMSEditor.isChecked()) {
@@ -285,6 +307,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 						saveTitlePref(context, mAppWidgetId, titlePrefix);
 						saveContactNumberPref(context, mAppWidgetId, number);
 						saveContactNamePref(context, mAppWidgetId, name);
+
 
 						// store checkboxValue
 						if (m_startSMSEditor.isChecked())
@@ -358,6 +381,23 @@ public class ExampleAppWidgetConfigure extends Activity {
 			return context.getString(R.string.no_name);
 		}
 	}
+
+	static String loadWidgetBackground(Context context, int appWidgetId) {
+		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+		String prefix = prefs.getString(PREF_PREFIX_BACKGROUND + appWidgetId,	"");
+		return prefix;
+	}
+
+	// Write the prefix to the SharedPreferences object for this widget
+	static void saveWidgetBackground(Context context, int appWidgetId,
+									String _color) {
+		SharedPreferences.Editor prefs = context.getSharedPreferences(
+				PREFS_NAME, 0).edit();
+		prefs.putString(PREF_PREFIX_BACKGROUND + appWidgetId, _color);
+		prefs.commit();
+	}
+
+
 
 	static String loadStartSMSAppPref(Context context, int appWidgetId) {
 		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);

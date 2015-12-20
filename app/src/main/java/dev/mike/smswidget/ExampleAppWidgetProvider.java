@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -32,15 +33,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.text.TextUtils;
 import android.text.format.Time;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Toast;
+
 import dev.mike.R;
 
 /**
@@ -48,8 +55,8 @@ import dev.mike.R;
  * to show the configuration settings and the current time when the widget was
  * updated. We also register a BroadcastReceiver for time-changed and
  * timezone-changed broadcasts, and update then too.
- * 
- * <p>
+ * <p/>
+ * <p/>
  * See also the following files:
  * <ul>
  * <li>ExampleAppWidgetConfigure.java</li>
@@ -59,8 +66,7 @@ import dev.mike.R;
  * <li>res/xml/appwidget_provider.xml</li>
  * </ul>
  */
-public class ExampleAppWidgetProvider extends AppWidgetProvider
-{
+public class ExampleAppWidgetProvider extends AppWidgetProvider {
     // log tag
     private static final String TAG = "ExampleAppWidget";
 
@@ -70,48 +76,44 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider
 
     //Broadcast Receiver : singleton
     private static int m_isRegistered = 0;
-    
+
     //locking button
     private static int m_isButtonLocked = 0;
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-	    int[] appWidgetIds)
-    {
-	Log.d(TAG, "onUpdate");
-	// For each widget that needs an update, get the text that we should
-	// display:
-	// - Create a RemoteViews object for it
-	// - Set the text in the RemoteViews object
-	// - Tell the AppWidgetManager to show that views object for the widget.
-	final int N = appWidgetIds.length;
-	for (int i = 0; i < N; i++)
-	{
-	   int appWidgetId = appWidgetIds[i];
-	   // String titlePrefix = ExampleAppWidgetConfigure.loadTitlePref(   context, appWidgetId);
-	    
-	    updateAppWidget(context, appWidgetManager, appWidgetId  );
-	}
+                         int[] appWidgetIds) {
+        Log.d(TAG, "onUpdate");
+        // For each widget that needs an update, get the text that we should
+        // display:
+        // - Create a RemoteViews object for it
+        // - Set the text in the RemoteViews object
+        // - Tell the AppWidgetManager to show that views object for the widget.
+        final int N = appWidgetIds.length;
+        for (int i = 0; i < N; i++) {
+            int appWidgetId = appWidgetIds[i];
+            // String titlePrefix = ExampleAppWidgetConfigure.loadTitlePref(   context, appWidgetId);
+
+            updateAppWidget(context, appWidgetManager, appWidgetId);
+        }
 
     }
 
     @Override
-    public void onDeleted(Context context, int[] appWidgetIds)
-    {
-	Log.d(TAG, "onDeleted");
-	// When the user deletes the widget, delete the preference associated
-	// with it.
-	final int N = appWidgetIds.length;
-	for (int i = 0; i < N; i++)
-	{
-	    ExampleAppWidgetConfigure.deleteTitlePref(context, appWidgetIds[i]);
-	    ExampleAppWidgetConfigure.deleteContactNamePref(context, appWidgetIds[i]);
-	    ExampleAppWidgetConfigure.deleteContactNumberPref(context, appWidgetIds[i]);
-	}
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        Log.d(TAG, "onDeleted");
+        // When the user deletes the widget, delete the preference associated
+        // with it.
+        final int N = appWidgetIds.length;
+        for (int i = 0; i < N; i++) {
+            ExampleAppWidgetConfigure.deleteTitlePref(context, appWidgetIds[i]);
+            ExampleAppWidgetConfigure.deleteContactNamePref(context, appWidgetIds[i]);
+            ExampleAppWidgetConfigure.deleteContactNumberPref(context, appWidgetIds[i]);
+        }
     }
 
     @Override
-    public void onEnabled(Context context)
-    {
+    public void onEnabled(Context context) {
 //	Log.d(TAG, "onEnabled");
 //	// When the first widget is created, register for the TIMEZONE_CHANGED
 //	// and TIME_CHANGED
@@ -132,14 +134,13 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider
 //    		".smswidget.ExampleBroadcastReceiver"),
 //    		PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
 //    		PackageManager.DONT_KILL_APP);
-        }
+    }
 
     @Override
-    public void onDisabled(Context context)
-    {
-	// When the first widget is created, stop listening for the
-	// TIMEZONE_CHANGED and
-	// TIME_CHANGED broadcasts.
+    public void onDisabled(Context context) {
+        // When the first widget is created, stop listening for the
+        // TIMEZONE_CHANGED and
+        // TIME_CHANGED broadcasts.
 //	Log.d(TAG, "onDisabled");
 //	PackageManager pm = context.getPackageManager();
 //	pm.setComponentEnabledSetting(new ComponentName(
@@ -151,95 +152,105 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider
 
 
     static void updateAppWidget(Context context,
-	    AppWidgetManager appWidgetManager, int appWidgetId)
-	    
-    {
-	Log.d(TAG, "updateAppWidget appWidgetId=" + appWidgetId);
-	// Getting the string this way allows the string to be localized. The
-	// format
-	// string is filled in using java.util.Formatter-style format strings.
-	// CharSequence text = context.getString(R.string.appwidget_text_format,
-	// ExampleAppWidgetConfigure.loadTitlePref(context, appWidgetId),
-	// "0x" + Long.toHexString(SystemClock.elapsedRealtime()));
+                                AppWidgetManager appWidgetManager, int appWidgetId)
 
-	//CharSequence text = titlePrefix;
-	CharSequence title = ExampleAppWidgetConfigure.loadTitlePref(context, appWidgetId);
-	CharSequence name = ExampleAppWidgetConfigure.loadContactNamePref(context, appWidgetId);
-	CharSequence number = ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId);
-	// Construct the RemoteViews object. It takes the package name (in our
-	// case, it's our
-	// package, but it needs this because on the other side it's the widget
-	// host inflating
-	// the layout from our package).
-	RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.appwidget_provider);
-	//views.setTextViewText(R.id.appwidget_text, number);
-	//views.setViewVisibility(R.id.appwidget_text, View.INVISIBLE);
-	
-	String btnText = (String) title;//.subSequence(0, 6);
+    {
+        Log.d(TAG, "updateAppWidget appWidgetId=" + appWidgetId);
+        // Getting the string this way allows the string to be localized. The
+        // format
+        // string is filled in using java.util.Formatter-style format strings.
+        // CharSequence text = context.getString(R.string.appwidget_text_format,
+        // ExampleAppWidgetConfigure.loadTitlePref(context, appWidgetId),
+        // "0x" + Long.toHexString(SystemClock.elapsedRealtime()));
+
+        //CharSequence text = titlePrefix;
+        CharSequence title = ExampleAppWidgetConfigure.loadTitlePref(context, appWidgetId);
+        CharSequence name = ExampleAppWidgetConfigure.loadContactNamePref(context, appWidgetId);
+        CharSequence number = ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId);
+        String background = ExampleAppWidgetConfigure.loadWidgetBackground(context, appWidgetId).toString();
+
+        // Construct the RemoteViews object. It takes the package name (in our
+        // case, it's our
+        // package, but it needs this because on the other side it's the widget
+        // host inflating
+        // the layout from our package).
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.appwidget_provider);
+        //views.setTextViewText(R.id.appwidget_text, number);
+        //views.setViewVisibility(R.id.appwidget_text, View.INVISIBLE);
+
+        String btnText = (String) title;//.subSequence(0, 6);
 //	if(btnText.length()>6)
 //	{btnText.concat("...");}
-	//views.setTextViewText(R.id.button, btnText);
-	views.setTextViewText(R.id.tv_contact_name, name);
-	views.setTextViewText(R.id.appwidget_text, btnText);
-	Intent active = new Intent(context, ExampleAppWidgetProvider.class);
-	active.setAction(ACTION_WIDGET_RECEIVER);
-	active.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        //views.setTextViewText(R.id.button, btnText);
+        views.setTextViewText(R.id.tv_contact_name, name);
+        views.setTextViewText(R.id.appwidget_text, btnText);
 
-	//active.putExtra("msg", text);
-	//m_msgText = text.toString();
-	//Toast.makeText(context, "updateAPP" + text, Toast.LENGTH_SHORT).show();
+        try {
+
+            if (!TextUtils.isEmpty(background)) {
+                Bitmap image = Bitmap.createBitmap(38, 30, Bitmap.Config.ARGB_8888);
+                image.eraseColor(Color.parseColor(background));
+                views.setImageViewBitmap(R.id.button, image);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Intent active = new Intent(context, ExampleAppWidgetProvider.class);
+        active.setAction(ACTION_WIDGET_RECEIVER);
+        active.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+
+        //active.putExtra("msg", text);
+        //m_msgText = text.toString();
+        //Toast.makeText(context, "updateAPP" + text, Toast.LENGTH_SHORT).show();
 //	actionPendingIntentList[appWidgetId]=PendingIntent.getBroadcast(context,
 //		0, active, 0);
-	PendingIntent actionPendingIntent = PendingIntent.getBroadcast(context,
-		appWidgetId, active, 0);
-	views.setOnClickPendingIntent(R.id.button, actionPendingIntent);
-	//views.setOnClickPendingIntent(R.id.button, actionPendingIntentList[appWidgetId]);
-	// Tell the widget manager
+        PendingIntent actionPendingIntent = PendingIntent.getBroadcast(context,
+                appWidgetId, active, 0);
+        views.setOnClickPendingIntent(R.id.button, actionPendingIntent);
+        //views.setOnClickPendingIntent(R.id.button, actionPendingIntentList[appWidgetId]);
+        // Tell the widget manager
 
-	appWidgetManager.updateAppWidget(appWidgetId, views);
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     // ---sends an SMS message to another device---
-    private void sendSMS(Context _context, String phoneNumber, String message)
-    {
- 	
-    	if(m_isButtonLocked == 0)
-    	{
-    	m_isButtonLocked = 1;
-        String SENT = "SMS_SENT";
-        String DELIVERED = "SMS_DELIVERED";
- 
-        Intent sentIntent = new Intent(SENT);
-        sentIntent.putExtra("SENT_MSG", message);
-        sentIntent.putExtra("SENT_NUMBER", phoneNumber);
-        
-        PendingIntent sentPI = PendingIntent.getBroadcast(_context, 0,
-        		sentIntent, PendingIntent.FLAG_ONE_SHOT);
-        
- 
-        PendingIntent deliveredPI = PendingIntent.getBroadcast(_context, 0,
-            new Intent(DELIVERED), PendingIntent.FLAG_ONE_SHOT);
- 
-        
-        //only register once
-        if(m_isRegistered == 0)
-        {
-        	m_isRegistered = 1;
-        	registeringBroadcastReceiver(_context, SENT, DELIVERED);        
+    private void sendSMS(Context _context, String phoneNumber, String message) {
+
+        if (m_isButtonLocked == 0) {
+            m_isButtonLocked = 1;
+            String SENT = "SMS_SENT";
+            String DELIVERED = "SMS_DELIVERED";
+
+            Intent sentIntent = new Intent(SENT);
+            sentIntent.putExtra("SENT_MSG", message);
+            sentIntent.putExtra("SENT_NUMBER", phoneNumber);
+
+            PendingIntent sentPI = PendingIntent.getBroadcast(_context, 0,
+                    sentIntent, PendingIntent.FLAG_ONE_SHOT);
+
+
+            PendingIntent deliveredPI = PendingIntent.getBroadcast(_context, 0,
+                    new Intent(DELIVERED), PendingIntent.FLAG_ONE_SHOT);
+
+
+            //only register once
+            if (m_isRegistered == 0) {
+                m_isRegistered = 1;
+                registeringBroadcastReceiver(_context, SENT, DELIVERED);
+            }
+            Log.i(TAG, "Send SMS"); // LogCat message
+            SmsManager sms = SmsManager.getDefault();
+            //sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+            sms.sendTextMessage(phoneNumber, null, message, sentPI, null);
+        } else {
+            Toast.makeText(_context, "Button Locked! Wait until SMS is sent!",
+                    Toast.LENGTH_SHORT).show();
         }
-        Log.i(TAG,"Send SMS"); // LogCat message
-        SmsManager sms = SmsManager.getDefault();
-        //sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);  
-        sms.sendTextMessage(phoneNumber, null, message, sentPI, null);  
-       	}
-    	else
-    	{
-    		 Toast.makeText(_context, "Button Locked! Wait until SMS is sent!", 
-                     Toast.LENGTH_SHORT).show();
-    	}
     }
+
     private void addSmsToInboxHistory(Context arg0, String phoneNumber, String message) {
-		final String ADDRESS = "address";
+        final String ADDRESS = "address";
         //final String PERSON = "person";
         final String DATE = "date";
         final String READ = "read";
@@ -248,68 +259,67 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider
         final String BODY = "body";
 
         Calendar cal = Calendar.getInstance();
-cal.getTimeInMillis();
+        cal.getTimeInMillis();
 
         //int MESSAGE_TYPE_INBOX = 1;
         //int MESSAGE_TYPE_SENT = 2; http://osdir.com/ml/AndroidDevelopers/2009-03/msg02449.html
 
-    	 ContentValues values = new ContentValues();
-    	 values.put(ADDRESS, phoneNumber);
-    	 values.put(DATE,  cal.getTimeInMillis());
-    	 values.put(READ, 1);
-    	 values.put(STATUS, -1);
-    	 values.put(TYPE, 2);
-    	 values.put(BODY, message);
-         //ContentResolver contentResolver = getContentResolver();
-         Uri inserted = arg0.getContentResolver().insert(Uri.parse("content://sms"), values);
-         Log.i(TAG,"SMS added to history!");
-	}
-	private void registeringBroadcastReceiver(Context _context, String SENT, String DELIVERED) {
-		//---when the SMS has been sent---
-        _context.getApplicationContext().registerReceiver(new BroadcastReceiver(){
+        ContentValues values = new ContentValues();
+        values.put(ADDRESS, phoneNumber);
+        values.put(DATE, cal.getTimeInMillis());
+        values.put(READ, 1);
+        values.put(STATUS, -1);
+        values.put(TYPE, 2);
+        values.put(BODY, message);
+        //ContentResolver contentResolver = getContentResolver();
+        Uri inserted = arg0.getContentResolver().insert(Uri.parse("content://sms"), values);
+        Log.i(TAG, "SMS added to history!");
+    }
+
+    private void registeringBroadcastReceiver(Context _context, String SENT, String DELIVERED) {
+        //---when the SMS has been sent---
+        _context.getApplicationContext().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context arg0, Intent arg1) {
-                switch (getResultCode())
-                {
+                switch (getResultCode()) {
                     case Activity.RESULT_OK:
-                    	//if successful sent, add sms to history
+                        //if successful sent, add sms to history
                         Bundle extras = arg1.getExtras();
                         String msg = extras.getString("SENT_MSG");
                         String number = extras.getString("SENT_NUMBER");
-                        addSmsToInboxHistory(arg0,number,msg);
-                        
-                        Toast.makeText(arg0, "SMS sent: " + msg, 
-                                Toast.LENGTH_SHORT).show(); 
+                        addSmsToInboxHistory(arg0, number, msg);
+
+                        Toast.makeText(arg0, "SMS sent: " + msg,
+                                Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        Toast.makeText(arg0, "Generic failure", 
+                        Toast.makeText(arg0, "Generic failure",
                                 Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        Toast.makeText(arg0, "No service", 
+                        Toast.makeText(arg0, "No service",
                                 Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_NULL_PDU:
-                        Toast.makeText(arg0, "Null PDU", 
+                        Toast.makeText(arg0, "Null PDU",
                                 Toast.LENGTH_SHORT).show();
                         break;
                     case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        Toast.makeText(arg0, "Radio off", 
+                        Toast.makeText(arg0, "Radio off",
                                 Toast.LENGTH_SHORT).show();
                         break;
                 }
                 m_isButtonLocked = 0; //enable button
             }
         }, new IntentFilter(SENT));
- 
+
         //---when the SMS has been delivered---
-        _context.getApplicationContext().registerReceiver(new BroadcastReceiver(){
+        _context.getApplicationContext().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context arg0, Intent arg1) {
-                switch (getResultCode())
-                {
+                switch (getResultCode()) {
                     case Activity.RESULT_OK:
-                    	//TODO: LOCK Widget
+                        //TODO: LOCK Widget
 //                    	Bundle bundle = arg1.getExtras();        
 //                        SmsMessage[] msgs = null;
 //                        String str = ""; 
@@ -329,42 +339,37 @@ cal.getTimeInMillis();
 //                            //---display the new SMS message---
 //                            Toast.makeText(arg0, str, Toast.LENGTH_SHORT).show();
 //                        }  
-                        Toast.makeText(arg0, "SMS delivered", 
-                               Toast.LENGTH_SHORT).show();
+                        Toast.makeText(arg0, "SMS delivered",
+                                Toast.LENGTH_SHORT).show();
                         break;
                     case Activity.RESULT_CANCELED:
-                    	//TODO: LOCK Widge                    
-                        Toast.makeText(arg0, "SMS not delivered", 
+                        //TODO: LOCK Widge
+                        Toast.makeText(arg0, "SMS not delivered",
                                 Toast.LENGTH_SHORT).show();
-                        break;                        
+                        break;
                 }
             }
         }, new IntentFilter(DELIVERED));
-	}
+    }
 
     @Override
-    public void onReceive(Context context, Intent intent)
-    {// v1.5 fix that doesn't call onDelete Action
-	final String action = intent.getAction();
-	if (AppWidgetManager.ACTION_APPWIDGET_DELETED.equals(action))
-	{
-	    final int appWidgetId = intent.getExtras().getInt(
-		    AppWidgetManager.EXTRA_APPWIDGET_ID,
-		    AppWidgetManager.INVALID_APPWIDGET_ID);
-	    if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID)
-	    {
-		this.onDeleted(context, new
+    public void onReceive(Context context, Intent intent) {// v1.5 fix that doesn't call onDelete Action
+        final String action = intent.getAction();
+        if (AppWidgetManager.ACTION_APPWIDGET_DELETED.equals(action)) {
+            final int appWidgetId = intent.getExtras().getInt(
+                    AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                this.onDeleted(context, new
 
-		int[] { appWidgetId });
-	    }
-	} else
-	{ // check, if our Action was called
-	    if (intent.getAction().equals(ACTION_WIDGET_RECEIVER))
-	    {
+                        int[]{appWidgetId});
+            }
+        } else { // check, if our Action was called
+            if (intent.getAction().equals(ACTION_WIDGET_RECEIVER)) {
 
-		 // Find the widget id from the intent. 
-	    Bundle extras = intent.getExtras();
-		int appWidgetId = extras.getInt( AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+                // Find the widget id from the intent.
+                Bundle extras = intent.getExtras();
+                int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 //		try
 //		{
 //		    msg = intent.getStringExtra("msg");
@@ -372,35 +377,33 @@ cal.getTimeInMillis();
 //		{
 //		    Log.e("Error", "msg = null");
 //		}
-		//Toast.makeText(context,"onReceive id: "+ appWidgetId + msg, Toast.LENGTH_SHORT).show();
-		
-		
-		// sendSMS
-		// Uri smsUri = Uri.parse("tel:066475021214");
-		// Intent intentSMS = new Intent(Intent.ACTION_VIEW, smsUri);
-		// intentSMS.putExtra("sms_body", msg);
-		// intentSMS.setType("vnd.android-dir/mms-sms");
-		// intentSMS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		// context.startActivity(intentSMS);
-		// sendSMS("066475021214",msg);
-		//sendSMS(context, "066475021214", ExampleAppWidgetConfigure.loadTitlePref(
-		//	    context, appWidgetId));
-		
-		 if(ExampleAppWidgetConfigure.loadStartSMSAppPref(context, appWidgetId ).equals("1"))
-		 {
-			 sendSMS(context, ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId), ExampleAppWidgetConfigure.loadTitlePref(
-					    context, appWidgetId));
-		 }
-		 else //send via the sms app
-		 {
-			 Uri uri = Uri.parse("smsto:"+ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId)); 
-			 Intent startSMSappIntent = new Intent(Intent.ACTION_SENDTO, uri); 
-			 startSMSappIntent.putExtra("sms_body", ExampleAppWidgetConfigure.loadTitlePref(
-					    context, appWidgetId));   
-			 startSMSappIntent.addFlags(startSMSappIntent.FLAG_ACTIVITY_NEW_TASK);
-			 context.startActivity(startSMSappIntent);
-		 }
-	
+                //Toast.makeText(context,"onReceive id: "+ appWidgetId + msg, Toast.LENGTH_SHORT).show();
+
+
+                // sendSMS
+                // Uri smsUri = Uri.parse("tel:066475021214");
+                // Intent intentSMS = new Intent(Intent.ACTION_VIEW, smsUri);
+                // intentSMS.putExtra("sms_body", msg);
+                // intentSMS.setType("vnd.android-dir/mms-sms");
+                // intentSMS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                // context.startActivity(intentSMS);
+                // sendSMS("066475021214",msg);
+                //sendSMS(context, "066475021214", ExampleAppWidgetConfigure.loadTitlePref(
+                //	    context, appWidgetId));
+
+                if (ExampleAppWidgetConfigure.loadStartSMSAppPref(context, appWidgetId).equals("1")) {
+                    sendSMS(context, ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId), ExampleAppWidgetConfigure.loadTitlePref(
+                            context, appWidgetId));
+                } else //send via the sms app
+                {
+                    Uri uri = Uri.parse("smsto:" + ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId));
+                    Intent startSMSappIntent = new Intent(Intent.ACTION_SENDTO, uri);
+                    startSMSappIntent.putExtra("sms_body", ExampleAppWidgetConfigure.loadTitlePref(
+                            context, appWidgetId));
+                    startSMSappIntent.addFlags(startSMSappIntent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(startSMSappIntent);
+                }
+
 //		PendingIntent contentIntent = PendingIntent.getActivity(
 //			context, 0, intent, 0);
 //		NotificationManager notificationManager = (NotificationManager) context
@@ -409,8 +412,8 @@ cal.getTimeInMillis();
 //			"SMS sent to GACKL!", System.currentTimeMillis());
 //		noty.setLatestEventInfo(context, "Notice", msg, contentIntent);
 //		notificationManager.notify(1, noty);
-	    }
-	    super.onReceive(context, intent);
-	}
+            }
+            super.onReceive(context, intent);
+        }
     }
 }

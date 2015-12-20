@@ -48,9 +48,22 @@
 		    android:layout_height="wrap_content"
 		    android:text="@android:string/ok" />
 
+		<Button
+			android:id="@+id/btn_color"
+			android:text="pick a color"
+			android:visibility="gone"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<EditText
+			android:id="@+id/et_setcolor"
+			android:hint="enter color in the format of #AARRGGBB"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+
 		<com.google.android.gms.ads.AdView
 			android:id="@+id/adView"
-			android:layout_width="match_parent"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
 			android:layout_alignParentBottom="true"
