@@ -62,7 +62,7 @@ import dev.mike.R;
 public class ExampleAppWidgetProvider extends AppWidgetProvider
 {
     // log tag
-    private static final String TAG = "ExampleAppWidgetProvider";
+    private static final String TAG = "ExampleAppWidget";
 
     // for the button
     public static String ACTION_WIDGET_CONFIGURE = "ConfigureWidget";
@@ -227,7 +227,7 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider
         	m_isRegistered = 1;
         	registeringBroadcastReceiver(_context, SENT, DELIVERED);        
         }
-        Log.i(TAG,"Send SMS"); // LogCat message // TAG=”TestActivity”
+        Log.i(TAG,"Send SMS"); // LogCat message
         SmsManager sms = SmsManager.getDefault();
         //sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);  
         sms.sendTextMessage(phoneNumber, null, message, sentPI, null);  

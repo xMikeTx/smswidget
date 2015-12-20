@@ -30,4 +30,5 @@
     <string name="no_number">No Number</string>
     <string name="btn_browse">Select a phonenumber</string>
     <string name="cbx_sendByClick">Send SMS directly without opening the default SMS app</string>
+    <string name="banner_ad_unit_id">ca-app-pub-8402964909349722/1918151494</string>
 </resources>

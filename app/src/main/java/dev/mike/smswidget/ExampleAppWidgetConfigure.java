@@ -49,6 +49,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Set;
 import com.google.ads.*;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 /**
  * The configuration screen for the ExampleAppWidgetProvider widget sample.
@@ -160,16 +163,9 @@ public class ExampleAppWidgetConfigure extends Activity {
 
 		// Ad things
 		// Create the adView
-		AdView adView = new AdView(this, AdSize.BANNER, pubID);
-		// Lookup your LinearLayout assuming it’s been given
-		// the attribute android:id="@+id/mainLayout"
-		LinearLayout layout = (LinearLayout) findViewById(R.id.linearLayoutConfig);
-		// Add the adView to it
-		layout.addView(adView);
-		// Initiate a generic request to load it with an ad
-		AdRequest request = new AdRequest();
-		// request.setTesting(true);
-		adView.loadAd(request);
+		AdView mAdView = (AdView) findViewById(R.id.adView);
+		AdRequest adRequest = new AdRequest.Builder().build();
+		mAdView.loadAd(adRequest);
 
 	}
 
