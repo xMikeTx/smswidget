@@ -17,6 +17,8 @@
 package dev.mike.smswidget;
 
 import dev.mike.R;
+import dev.mike.smswidget.util.SharedPrefHelper;
+
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ContentResolver;
@@ -54,13 +56,7 @@ import com.google.android.gms.ads.AdRequest;
 public class ExampleAppWidgetConfigure extends Activity {
 	static final String TAG = "ExampleAppWidgetConfigure";
 
-	// Storage params
-	private static final String PREFS_NAME = "dev.mike.smswidget.ExampleAppWidgetProvider";
-	private static final String PREF_PREFIX_CONTACT_NAME = "prefix_contactName_";
-	private static final String PREF_PREFIX_BACKGROUND = "prefix_background_";
-	private static final String PREF_PREFIX_CONTACT_NUMBER = "prefix_contactNumber_";
-	private static final String PREF_PREFIX_KEY = "prefix_";
-	private static final String PREF_PREFIX_STARTSMS = "prefix_startSMSAPP";
+
 
 	private static final String DEBUG_TAG = null;
 
@@ -158,7 +154,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 				mAppWidgetId);*/
 
 		// set number
-		m_contactNumber = loadContactNumberPref(ExampleAppWidgetConfigure.this,
+		m_contactNumber = SharedPrefHelper.getInstance().loadContactNumberPref(ExampleAppWidgetConfigure.this,
 				mAppWidgetId);
 
 		// combine name and number
@@ -166,7 +162,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 		m_contactTv.setText(contact);
 
 		// set message
-		mAppWidgetPrefix.setText(loadTitlePref(ExampleAppWidgetConfigure.this,
+		mAppWidgetPrefix.setText( SharedPrefHelper.getInstance().loadTitlePref(ExampleAppWidgetConfigure.this,
 				mAppWidgetId));
 
 		// Ad things
@@ -238,8 +234,8 @@ public class ExampleAppWidgetConfigure extends Activity {
 			case NUMBER_SELECTOR_RESULT:
 				m_contactNumber = data.getStringExtra(PUBLIC_STATIC_STRING_IDENTIFIER_NUMBER);
 				m_contactName = data.getStringExtra(PUBLIC_STATIC_STRING_IDENTIFIER_NAME);
-				saveContactNumberPref(this, mAppWidgetId, m_contactNumber);
-				saveContactNamePref(this, mAppWidgetId, m_contactName);
+				SharedPrefHelper.getInstance().saveContactNumberPref(this, mAppWidgetId, m_contactNumber);
+				SharedPrefHelper.getInstance().saveContactNamePref(this, mAppWidgetId, m_contactName);
 				String contact = m_contactName + " <" + m_contactNumber + ">";
 
 				m_contactTv.setText(contact);
@@ -281,7 +277,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 					Toast.makeText(ExampleAppWidgetConfigure.this,"Invalid color",Toast.LENGTH_LONG).show();
 					return;
 				}
-				saveWidgetBackground(context, mAppWidgetId, color);
+				SharedPrefHelper.getInstance().saveWidgetBackground(context, mAppWidgetId, color);
 			}
 
 			String number = m_contactNumber;// m_receiverEditBox.getText().toString();
@@ -304,16 +300,16 @@ public class ExampleAppWidgetConfigure extends Activity {
 						// prefs and
 						// return that they
 						// clicked OK.
-						saveTitlePref(context, mAppWidgetId, titlePrefix);
-						saveContactNumberPref(context, mAppWidgetId, number);
-						saveContactNamePref(context, mAppWidgetId, name);
+						SharedPrefHelper.getInstance().saveTitlePref(context, mAppWidgetId, titlePrefix);
+						SharedPrefHelper.getInstance().saveContactNumberPref(context, mAppWidgetId, number);
+						SharedPrefHelper.getInstance().saveContactNamePref(context, mAppWidgetId, name);
 
 
 						// store checkboxValue
 						if (m_startSMSEditor.isChecked())
-							saveStartSMSAPPPref(context, mAppWidgetId, "1");
+							SharedPrefHelper.getInstance().saveStartSMSAPPPref(context, mAppWidgetId, "1");
 						else
-							saveStartSMSAPPPref(context, mAppWidgetId, "0");
+							SharedPrefHelper.getInstance().saveStartSMSAPPPref(context, mAppWidgetId, "0");
 						// Push widget update to surface with newly set prefix
 						AppWidgetManager appWidgetManager = AppWidgetManager
 								.getInstance(context);
@@ -340,127 +336,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 
 	};
 
-	// Write the prefix to the SharedPreferences object for this widget
-	static void saveTitlePref(Context context, int appWidgetId, String text) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
-		prefs.commit();
-	}
 
-	// Read the prefix from the SharedPreferences object for this widget.
-	// If there is no preference saved, get the default from a resource
-	static String loadTitlePref(Context context, int appWidgetId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-		String prefix = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
-		if (prefix != null) {
-			return prefix;
-		} else {
-			return context.getString(R.string.appwidget_prefix_default);
-		}
-	}
-
-	// Write the prefix to the SharedPreferences object for this widget
-	static void saveContactNamePref(Context context, int appWidgetId,
-			String text) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.putString(PREF_PREFIX_CONTACT_NAME + appWidgetId, text);
-		prefs.commit();
-	}
-
-	// Read the prefix from the SharedPreferences object for this widget.
-	// If there is no preference saved, get the default from a resource
-	static String loadContactNamePref(Context context, int appWidgetId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-		String prefix = prefs.getString(PREF_PREFIX_CONTACT_NAME + appWidgetId,
-				null);
-		if (prefix != null) {
-			return prefix;
-		} else {
-			return context.getString(R.string.no_name);
-		}
-	}
-
-	static String loadWidgetBackground(Context context, int appWidgetId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-		String prefix = prefs.getString(PREF_PREFIX_BACKGROUND + appWidgetId,	"");
-		return prefix;
-	}
-
-	// Write the prefix to the SharedPreferences object for this widget
-	static void saveWidgetBackground(Context context, int appWidgetId,
-									String _color) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.putString(PREF_PREFIX_BACKGROUND + appWidgetId, _color);
-		prefs.commit();
-	}
-
-
-
-	static String loadStartSMSAppPref(Context context, int appWidgetId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-		String prefix = prefs.getString(PREF_PREFIX_STARTSMS + appWidgetId,
-				null);
-		if (prefix != null) {
-			return prefix;
-		} else {
-			return "1";
-		}
-	}
-
-	// Write the prefix to the SharedPreferences object for this widget
-	static void saveContactNumberPref(Context context, int appWidgetId,
-			String text) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.putString(PREF_PREFIX_CONTACT_NUMBER + appWidgetId, text);
-		prefs.commit();
-	}
-
-	// Write the prefix to the SharedPreferences object for this widget
-	static void saveStartSMSAPPPref(Context context, int appWidgetId,
-			String text) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.putString(PREF_PREFIX_STARTSMS + appWidgetId, text);
-		prefs.commit();
-	}
-
-	// Read the prefix from the SharedPreferences object for this widget.
-	// If there is no preference saved, get the default from a resource
-	static String loadContactNumberPref(Context context, int appWidgetId) {
-		SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
-		String prefix = prefs.getString(PREF_PREFIX_CONTACT_NUMBER
-				+ appWidgetId, null);
-		if (prefix != null) {
-			return prefix;
-		} else {
-			return context.getString(R.string.no_number);
-		}
-	}
-
-	static void deleteTitlePref(Context context, int appWidgetId) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.remove(PREF_PREFIX_KEY + appWidgetId);
-		prefs.commit();
-	}
-
-	static void deleteContactNumberPref(Context context, int appWidgetId) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.remove(PREF_PREFIX_CONTACT_NUMBER + appWidgetId);
-		prefs.commit();
-	}
-
-	static void deleteContactNamePref(Context context, int appWidgetId) {
-		SharedPreferences.Editor prefs = context.getSharedPreferences(
-				PREFS_NAME, 0).edit();
-		prefs.remove(PREF_PREFIX_CONTACT_NAME + appWidgetId);
-		prefs.commit();
-	}
 
 	static void loadAllTitlePrefs(Context context,
 			ArrayList<Integer> appWidgetIds, ArrayList<String> texts) {

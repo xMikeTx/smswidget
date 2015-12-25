@@ -49,6 +49,7 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import dev.mike.R;
+import dev.mike.smswidget.util.SharedPrefHelper;
 
 /**
  * A widget provider. We have a string that we pull from a preference in order
@@ -59,7 +60,7 @@ import dev.mike.R;
  * <p/>
  * See also the following files:
  * <ul>
- * <li>ExampleAppWidgetConfigure.java</li>
+ * <li>SharedPrefHelper.getInstance().java</li>
  * <li>ExampleBroadcastReceiver.java</li>
  * <li>res/layout/appwidget_configure.xml</li>
  * <li>res/layout/appwidget_provider.xml</li>
@@ -92,7 +93,7 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
             int appWidgetId = appWidgetIds[i];
-            // String titlePrefix = ExampleAppWidgetConfigure.loadTitlePref(   context, appWidgetId);
+            // String titlePrefix = SharedPrefHelper.getInstance().loadTitlePref(   context, appWidgetId);
 
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
@@ -106,9 +107,10 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
         // with it.
         final int N = appWidgetIds.length;
         for (int i = 0; i < N; i++) {
-            ExampleAppWidgetConfigure.deleteTitlePref(context, appWidgetIds[i]);
-            ExampleAppWidgetConfigure.deleteContactNamePref(context, appWidgetIds[i]);
-            ExampleAppWidgetConfigure.deleteContactNumberPref(context, appWidgetIds[i]);
+            SharedPrefHelper.getInstance().deleteTitlePref(context, appWidgetIds[i]);
+            SharedPrefHelper.getInstance().deleteContactNamePref(context, appWidgetIds[i]);
+            SharedPrefHelper.getInstance().deleteContactNumberPref(context, appWidgetIds[i]);
+            SharedPrefHelper.getInstance().deleteWidgetBackground(context,appWidgetIds[i]);
         }
     }
 
@@ -160,14 +162,14 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
         // format
         // string is filled in using java.util.Formatter-style format strings.
         // CharSequence text = context.getString(R.string.appwidget_text_format,
-        // ExampleAppWidgetConfigure.loadTitlePref(context, appWidgetId),
+        // SharedPrefHelper.getInstance().loadTitlePref(context, appWidgetId),
         // "0x" + Long.toHexString(SystemClock.elapsedRealtime()));
 
         //CharSequence text = titlePrefix;
-        CharSequence title = ExampleAppWidgetConfigure.loadTitlePref(context, appWidgetId);
-        CharSequence name = ExampleAppWidgetConfigure.loadContactNamePref(context, appWidgetId);
-        CharSequence number = ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId);
-        String background = ExampleAppWidgetConfigure.loadWidgetBackground(context, appWidgetId).toString();
+        CharSequence title = SharedPrefHelper.getInstance().loadTitlePref(context, appWidgetId);
+        CharSequence name = SharedPrefHelper.getInstance().loadContactNamePref(context, appWidgetId);
+        CharSequence number = SharedPrefHelper.getInstance().loadContactNumberPref(context, appWidgetId);
+        String background = SharedPrefHelper.getInstance().loadWidgetBackground(context, appWidgetId).toString();
 
         // Construct the RemoteViews object. It takes the package name (in our
         // case, it's our
@@ -388,17 +390,17 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
                 // intentSMS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 // context.startActivity(intentSMS);
                 // sendSMS("066475021214",msg);
-                //sendSMS(context, "066475021214", ExampleAppWidgetConfigure.loadTitlePref(
+                //sendSMS(context, "066475021214", SharedPrefHelper.getInstance().loadTitlePref(
                 //	    context, appWidgetId));
 
-                if (ExampleAppWidgetConfigure.loadStartSMSAppPref(context, appWidgetId).equals("1")) {
-                    sendSMS(context, ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId), ExampleAppWidgetConfigure.loadTitlePref(
+                if (SharedPrefHelper.getInstance().loadStartSMSAppPref(context, appWidgetId).equals("1")) {
+                    sendSMS(context, SharedPrefHelper.getInstance().loadContactNumberPref(context, appWidgetId), SharedPrefHelper.getInstance().loadTitlePref(
                             context, appWidgetId));
                 } else //send via the sms app
                 {
-                    Uri uri = Uri.parse("smsto:" + ExampleAppWidgetConfigure.loadContactNumberPref(context, appWidgetId));
+                    Uri uri = Uri.parse("smsto:" + SharedPrefHelper.getInstance().loadContactNumberPref(context, appWidgetId));
                     Intent startSMSappIntent = new Intent(Intent.ACTION_SENDTO, uri);
-                    startSMSappIntent.putExtra("sms_body", ExampleAppWidgetConfigure.loadTitlePref(
+                    startSMSappIntent.putExtra("sms_body", SharedPrefHelper.getInstance().loadTitlePref(
                             context, appWidgetId));
                     startSMSappIntent.addFlags(startSMSappIntent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(startSMSappIntent);
