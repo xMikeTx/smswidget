@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2006 The Android Open Source Project Licensed under the 
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2006 The Android Open Source Project Licensed under the
 	Apache License, Version 2.0 (the "License"); you may not use this file except 
 	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
 	Unless required by applicable law or agreed to in writing, software distributed 
@@ -7,68 +6,100 @@
 	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:ads="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/scroller"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:fillViewport="true">
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroller"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true">
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/linearLayoutConfig" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:orientation="vertical">
-		<TextView android:text="" android:id="@+id/contact"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:textStyle="bold"></TextView>
-		<Button android:onClick="onClickSearch" android:layout_height="wrap_content"
-			android:id="@+id/btn_searchContact" android:layout_width="fill_parent"
-			android:text="@string/btn_browse"></Button>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linearLayoutConfig"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
-		<EditText
-		    android:id="@+id/heading"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content" android:text="Enter Title">
+        <TextView
+            android:id="@+id/contact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textStyle="bold"></TextView>
 
-		    <requestFocus />
-		</EditText>
+        <Button
+            android:id="@+id/btn_searchContact"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onClickSearch"
+            android:text="@string/btn_browse"></Button>
 
-		<TextView
-		    android:id="@+id/textView3"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="Enter text:" />
+        <EditText
+            android:id="@+id/heading"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Enter Title">
 
-		<EditText android:layout_height="wrap_content" android:id="@+id/appwidget_prefix"
-			android:text="EditText" android:maxLength="160"  android:layout_width="fill_parent"></EditText>
-		<CheckBox android:layout_height="wrap_content" android:id="@+id/sendByOneClick"
-			android:text="@string/cbx_sendByClick" android:layout_width="wrap_content"></CheckBox>
+            <requestFocus />
+        </EditText>
 
-		<Button
-		    android:id="@+id/save_button"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@android:string/ok" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter text:" />
 
-		<Button
-			android:id="@+id/btn_color"
-			android:text="pick a color"
-			android:visibility="gone"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/appwidget_prefix"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="160"
+            android:text="EditText"></EditText>
 
-		<EditText
-			android:id="@+id/et_setcolor"
-			android:hint="enter color in the format of #AARRGGBB"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content" />
+        <CheckBox
+            android:id="@+id/sendByOneClick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cbx_sendByClick"></CheckBox>
 
-		<com.google.android.gms.ads.AdView
-			android:id="@+id/adView"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:layout_alignParentBottom="true"
-			ads:adSize="BANNER"
-			ads:adUnitId="@string/banner_ad_unit_id">
-		</com.google.android.gms.ads.AdView>
-	</LinearLayout>
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@android:string/ok" />
+
+        <Button
+            android:id="@+id/btn_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="pick a color"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/et_setcolor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="enter color in the format of #AARRGGBB" />
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/ll_colors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_space"
+                android:orientation="horizontal"
+                android:showDividers="middle">
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id"></com.google.android.gms.ads.AdView>
+    </LinearLayout>
 </ScrollView>

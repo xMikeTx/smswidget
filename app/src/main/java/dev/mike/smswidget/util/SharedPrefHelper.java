@@ -3,6 +3,8 @@ package dev.mike.smswidget.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+
 import dev.mike.R;
 import dev.mike.smswidget.MyApplication;
 
@@ -149,5 +151,9 @@ public class SharedPrefHelper {
         SharedPreferences.Editor prefs = this.prefs.edit();
         prefs.remove(PREF_PREFIX_BACKGROUND + appWidgetId);
         prefs.apply();
+    }
+
+    public void loadAllTitlePrefs(Context context,
+                                  ArrayList<Integer> appWidgetIds, ArrayList<String> texts) {
     }
 }

@@ -19,6 +19,7 @@ package dev.mike.smswidget;
 import dev.mike.R;
 import dev.mike.smswidget.util.SharedPrefHelper;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ContentResolver;
@@ -26,6 +27,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,10 +39,15 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +87,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 	TextView m_contactTv;
 	CheckBox m_startSMSEditor;
 	// Button m_selectContact;
+	private LinearLayout mLlColors;
 
 	// members
 	String m_message = null;
@@ -87,6 +95,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 	String m_contactNumber = null;
 
 	String pubID = "a14da86309190e7";
+
 
 	public ExampleAppWidgetConfigure() {
 		super();
@@ -105,7 +114,7 @@ public class ExampleAppWidgetConfigure extends Activity {
 
 		// Find the EditText
 		mAppWidgetPrefix = (EditText) findViewById(R.id.appwidget_prefix);
-
+		mLlColors = (LinearLayout)findViewById(R.id.ll_colors);
 		mWidgetHeader = (EditText) findViewById(R.id.heading);
 		m_contactName = mWidgetHeader.getText().toString();
 		mWidgetHeader.addTextChangedListener(new TextWatcher(){
@@ -147,7 +156,30 @@ public class ExampleAppWidgetConfigure extends Activity {
 		});
 
 		mColorInput = (EditText)findViewById(R.id.et_setcolor);
+		mColorInput.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				int color = 0;
+				try {
+					color = Color.parseColor(s.toString());
+				}catch (Exception e){
+
+				}
+				if(color!=0)
+				mColorInput.setBackgroundColor(color);
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+
+			}
+		});
 		// set name
 		//m_contactName = mWidgetHeader.getText().toString();
 		/*m_contactName = loadContactNamePref(ExampleAppWidgetConfigure.this,
@@ -165,12 +197,51 @@ public class ExampleAppWidgetConfigure extends Activity {
 		mAppWidgetPrefix.setText( SharedPrefHelper.getInstance().loadTitlePref(ExampleAppWidgetConfigure.this,
 				mAppWidgetId));
 
+		// create color list
+		Resources res = getResources();
+		int width = (int)res.getDimension(R.dimen.image_width);
+		RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(width, width);
+		int margin = 15;
+		params.setMargins(margin,margin,margin,margin);
+		addColorView(params, Color.parseColor("#F44336"));
+		addColorView(params, Color.parseColor("#E91E63"));
+		addColorView(params, Color.parseColor("#9C27B0"));
+		addColorView(params, Color.parseColor("#673AB7"));
+		addColorView(params, Color.parseColor("#3F51B5"));
+		addColorView(params, Color.parseColor("#2196F3"));
+		addColorView(params, Color.parseColor("#03A9F4"));
+		addColorView(params, Color.parseColor("#00BCD4"));
+		addColorView(params, Color.parseColor("#009688"));
+		addColorView(params, Color.parseColor("#4CAF50"));
+		addColorView(params, Color.parseColor("#8BC34A"));
+		addColorView(params, Color.parseColor("#CDDC39"));
+		addColorView(params, Color.parseColor("#FFEB3B"));
+		addColorView(params, Color.parseColor("#FFC107"));
+		addColorView(params, Color.parseColor("#FF9800"));
+		addColorView(params, Color.parseColor("#795548"));
+		addColorView(params, Color.parseColor("#9E9E9E"));
+		addColorView(params, Color.parseColor("#607D8B"));
 		// Ad things
 		// Create the adView
 		AdView mAdView = (AdView) findViewById(R.id.adView);
 		AdRequest adRequest = new AdRequest.Builder().build();
 		mAdView.loadAd(adRequest);
 
+	}
+
+	private void addColorView(RelativeLayout.LayoutParams params, final int c) {
+		Button colorView1 = new Button(this);
+		colorView1.setLayoutParams(params);
+		colorView1.setBackgroundColor(c);
+		colorView1.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(mColorInput!=null){
+					mColorInput.setText(String.format("#%06X", 0xFFFFFF & c));
+				}
+			}
+		});
+		mLlColors.addView(colorView1);
 	}
 
 	public void onClickSearch(View _view) {
@@ -335,10 +406,4 @@ public class ExampleAppWidgetConfigure extends Activity {
 		}
 
 	};
-
-
-
-	static void loadAllTitlePrefs(Context context,
-			ArrayList<Integer> appWidgetIds, ArrayList<String> texts) {
-	}
 }
